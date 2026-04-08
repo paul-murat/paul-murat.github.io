@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Smooth Apple Scroll</title>
+<title>Apple Scroll V3</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-background:black;
+background:#000;
 color:white;
 overflow-x:hidden;
 }
 
 .scroll-section{
-height:500vh;
+height:600vh;
 position:relative;
 }
 
@@ -32,71 +32,67 @@ justify-content:center;
 
 .title{
 position:absolute;
-font-size:clamp(40px,6vw,90px);
+font-size:clamp(42px,7vw,110px);
 font-weight:600;
-letter-spacing:-0.02em;
+letter-spacing:-0.03em;
 text-align:center;
 opacity:0;
-transform:translate3d(0,100px,0);
-will-change: transform, opacity;
+transform:translate3d(0,120px,0) scale(.9);
+will-change:transform,opacity;
 }
 
 .subtitle{
 position:absolute;
-margin-top:120px;
+margin-top:140px;
 font-size:22px;
 color:#aaa;
 opacity:0;
 transform:translate3d(0,60px,0);
-will-change: transform, opacity;
+will-change:transform,opacity;
 }
 
-.shape{
+/* BACKGROUND BLOBS */
+.blob{
 position:absolute;
-border-radius:30px;
+border-radius:50%;
+filter:blur(40px);
 opacity:0;
-will-change: transform, opacity;
+will-change:transform,opacity;
 }
 
-.shape1{
-width:400px;
-height:400px;
-background:linear-gradient(135deg,#0ea5e9,#6366f1);
-}
-
-.shape2{
-width:300px;
-height:300px;
-background:linear-gradient(135deg,#ff3b30,#ff9500);
-}
-
-.shape3{
-width:200px;
-height:200px;
-background:linear-gradient(135deg,#34c759,#00c7be);
-}
-
-.device{
-position:absolute;
-width:260px;
-height:520px;
-border-radius:40px;
-background:linear-gradient(180deg,#111,#000);
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:0 40px 120px rgba(0,0,0,0.8);
-opacity:0;
-transform:scale(.6);
-will-change: transform, opacity;
-}
-
-.glow{
-position:absolute;
+.blob1{
 width:600px;
 height:600px;
+background:#0071e3;
+}
+
+.blob2{
+width:500px;
+height:500px;
+background:#ff2d55;
+}
+
+.blob3{
+width:400px;
+height:400px;
+background:#34c759;
+}
+
+.blob4{
+width:300px;
+height:300px;
+background:#af52de;
+}
+
+/* LIGHT GRADIENT */
+.gradient{
+position:absolute;
+width:1400px;
+height:1400px;
 border-radius:50%;
-background:radial-gradient(circle,rgba(0,140,255,.35),transparent);
+background:radial-gradient(circle,rgba(0,120,255,.25),transparent 60%);
 opacity:0;
-will-change: transform, opacity;
+will-change:transform,opacity;
 }
 
 </style>
@@ -106,19 +102,19 @@ will-change: transform, opacity;
 <section class="scroll-section" id="section">
 <div class="sticky">
 
-<div class="glow" id="glow"></div>
+<div class="gradient" id="gradient"></div>
 
-<div class="title" id="title1">Une expérience</div>
-<div class="title" id="title2">Pensée pour le scroll</div>
-<div class="title" id="title3">Fluide. Moderne. Apple-style.</div>
+<div class="blob blob1" id="b1"></div>
+<div class="blob blob2" id="b2"></div>
+<div class="blob blob3" id="b3"></div>
+<div class="blob blob4" id="b4"></div>
 
-<div class="subtitle" id="sub">Tout est animé par votre mouvement</div>
+<div class="title" id="t1">Une nouvelle façon</div>
+<div class="title" id="t2">de naviguer</div>
+<div class="title" id="t3">Tout réagit au scroll</div>
+<div class="title" id="t4">Fluide. Naturel. Moderne.</div>
 
-<div class="shape shape1" id="shape1"></div>
-<div class="shape shape2" id="shape2"></div>
-<div class="shape shape3" id="shape3"></div>
-
-<div class="device" id="device"></div>
+<div class="subtitle" id="sub">Inspiré des animations Apple</div>
 
 </div>
 </section>
@@ -126,17 +122,19 @@ will-change: transform, opacity;
 <script>
 const section = document.getElementById("section")
 
-const title1 = document.getElementById("title1")
-const title2 = document.getElementById("title2")
-const title3 = document.getElementById("title3")
+const t1 = document.getElementById("t1")
+const t2 = document.getElementById("t2")
+const t3 = document.getElementById("t3")
+const t4 = document.getElementById("t4")
+
 const sub = document.getElementById("sub")
 
-const shape1 = document.getElementById("shape1")
-const shape2 = document.getElementById("shape2")
-const shape3 = document.getElementById("shape3")
+const b1 = document.getElementById("b1")
+const b2 = document.getElementById("b2")
+const b3 = document.getElementById("b3")
+const b4 = document.getElementById("b4")
 
-const device = document.getElementById("device")
-const glow = document.getElementById("glow")
+const gradient = document.getElementById("gradient")
 
 let target = 0
 let current = 0
@@ -153,62 +151,49 @@ target = Math.min(Math.max(progress,0),1)
 
 function animate(){
 
-/* LERP smoothing */
-current += (target - current) * 0.08
+current += (target - current) * 0.06
+const p = current
 
-const progress = current
+const p1 = Math.min(p*4,1)
+const p2 = Math.min(Math.max((p-.25)*4,0),1)
+const p3 = Math.min(Math.max((p-.5)*4,0),1)
+const p4 = Math.min(Math.max((p-.75)*4,0),1)
 
-const p1 = Math.min(progress*3,1)
-const p2 = Math.min(Math.max((progress-.33)*3,0),1)
-const p3 = Math.min(Math.max((progress-.66)*3,0),1)
+/* TEXT */
 
-/* TITLES */
+t1.style.opacity = 1-p2
+t1.style.transform = `translate3d(0,${120-p1*120}px,0) scale(${0.9+p1*0.1})`
 
-title1.style.opacity = 1-p2
-title1.style.transform = `translate3d(0,${100 - p1*100}px,0)`
+t2.style.opacity = p2-p3
+t2.style.transform = `translate3d(0,${120-p2*120}px,0) scale(${0.9+p2*0.1})`
 
-title2.style.opacity = p2 - p3
-title2.style.transform = `translate3d(0,${100 - p2*100}px,0)`
+t3.style.opacity = p3-p4
+t3.style.transform = `translate3d(0,${120-p3*120}px,0) scale(${0.9+p3*0.1})`
 
-title3.style.opacity = p3
-title3.style.transform = `translate3d(0,${100 - p3*100}px,0)`
+t4.style.opacity = p4
+t4.style.transform = `translate3d(0,${120-p4*120}px,0) scale(${0.9+p4*0.1})`
 
-sub.style.opacity = p3
-sub.style.transform = `translate3d(0,${60 - p3*60}px,0)`
+sub.style.opacity = p4
+sub.style.transform = `translate3d(0,${60-p4*60}px,0)`
 
-/* DEVICE */
+/* GRADIENT */
 
-device.style.opacity = p2
+gradient.style.opacity = p
+gradient.style.transform = `scale(${0.8 + p*0.6})`
 
-device.style.transform = `
-scale(${0.6 + p2*0.5})
-rotate(${p2*8}deg)
-`
+/* BLOBS PARALLAX */
 
-/* GLOW */
+b1.style.opacity = p
+b1.style.transform = `translate3d(${ -500 + p*900}px,${200 - p*400}px,0)`
 
-glow.style.opacity = p2
-glow.style.transform = `scale(${0.8 + p2})`
+b2.style.opacity = p
+b2.style.transform = `translate3d(${ 400 - p*800}px,${-300 + p*600}px,0)`
 
-/* SHAPES */
+b3.style.opacity = p
+b3.style.transform = `translate3d(${ -300 + p*500}px,${400 - p*800}px,0)`
 
-shape1.style.opacity = p2
-shape1.style.transform = `translate3d(
-${-300 + progress*600}px,
-${200 - progress*400}px,
-0) rotate(${progress*180}deg)`
-
-shape2.style.opacity = p2
-shape2.style.transform = `translate3d(
-${400 - progress*700}px,
-${-200 + progress*500}px,
-0) rotate(${progress*-140}deg)`
-
-shape3.style.opacity = p3
-shape3.style.transform = `translate3d(
-${-200 + progress*300}px,
-${300 - progress*600}px,
-0) rotate(${progress*220}deg)`
+b4.style.opacity = p
+b4.style.transform = `translate3d(${ 300 - p*600}px,${300 - p*500}px,0)`
 
 requestAnimationFrame(animate)
 }
