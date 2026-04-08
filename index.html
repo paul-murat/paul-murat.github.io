@@ -1,162 +1,222 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scroll Animation Apple Style</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Apple Style Scroll Animation</title>
 
-    body{
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color:#111;
-      overflow-x:hidden;
-    }
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
 
-    header{
-      position:fixed;
-      top:0;
-      width:100%;
-      background:white;
-      text-align:center;
-      padding:30px;
-      font-size:42px;
-      font-weight:600;
-      z-index:100;
-      box-shadow:0 5px 20px rgba(0,0,0,0.05);
-    }
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+background:black;
+color:white;
+overflow-x:hidden;
+}
 
-    .spacer{
-      height:120vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:28px;
-      color:#666;
-    }
+/* SECTION SCROLL */
+.scroll-section{
+height:500vh;
+position:relative;
+}
 
-    .scroll-section{
-      height:300vh; /* grande zone pour animation liée au scroll */
-      position:relative;
-      background:black;
-      color:white;
-    }
+.sticky{
+position:sticky;
+top:0;
+height:100vh;
+overflow:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 
-    .sticky{
-      position:sticky;
-      top:0;
-      height:100vh;
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
+/* TITRES */
+.title{
+position:absolute;
+font-size:clamp(40px,6vw,90px);
+font-weight:600;
+letter-spacing:-0.02em;
+text-align:center;
+opacity:0;
+transform:translateY(100px);
+}
 
-    .title{
-      position:absolute;
-      font-size:64px;
-      font-weight:600;
-      opacity:0;
-      transform:translateY(100px);
-    }
+.subtitle{
+position:absolute;
+margin-top:120px;
+font-size:22px;
+color:#aaa;
+opacity:0;
+transform:translateY(60px);
+}
 
-    .box{
-      position:absolute;
-      width:120px;
-      height:120px;
-      border-radius:24px;
-      background:linear-gradient(135deg,#0ea5e9,#6366f1);
-      opacity:0;
-      transform:scale(.3) rotate(0deg);
-    }
+/* SHAPES */
+.shape{
+position:absolute;
+border-radius:30px;
+filter:blur(0px);
+opacity:0;
+}
 
-    .box1{ left:20%; top:50%; }
-    .box2{ left:50%; top:30%; }
-    .box3{ left:75%; top:60%; }
+.shape1{
+width:400px;
+height:400px;
+background:linear-gradient(135deg,#0ea5e9,#6366f1);
+}
 
-    footer{
-      height:60vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:40px;
-      background:#111;
-      color:white;
-    }
+.shape2{
+width:300px;
+height:300px;
+background:linear-gradient(135deg,#ff3b30,#ff9500);
+}
 
-  </style>
+.shape3{
+width:200px;
+height:200px;
+background:linear-gradient(135deg,#34c759,#00c7be);
+}
+
+/* CENTER OBJECT */
+.device{
+position:absolute;
+width:260px;
+height:520px;
+border-radius:40px;
+background:linear-gradient(180deg,#111,#000);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:
+0 0 0 1px rgba(255,255,255,0.05),
+0 40px 120px rgba(0,0,0,0.8);
+opacity:0;
+transform:scale(.6);
+}
+
+.glow{
+position:absolute;
+width:600px;
+height:600px;
+border-radius:50%;
+background:radial-gradient(circle,rgba(0,140,255,.4),transparent);
+filter:blur(40px);
+opacity:0;
+}
+
+</style>
 </head>
 <body>
 
-<header>Bonjour</header>
+<section class="scroll-section" id="section">
+<div class="sticky">
 
-<div class="spacer">Scroll ↓</div>
-<div class="spacer">Encore ↓</div>
+<div class="glow" id="glow"></div>
 
-<section class="scroll-section" id="scrollSection">
-  <div class="sticky">
+<div class="title" id="title1">Une expérience</div>
+<div class="title" id="title2">Pensée pour le scroll</div>
+<div class="title" id="title3">Fluide. Moderne. Apple-style.</div>
 
-    <div class="title" id="title">Animations au scroll</div>
+<div class="subtitle" id="sub">Tout est animé par votre mouvement</div>
 
-    <div class="box box1" id="box1"></div>
-    <div class="box box2" id="box2"></div>
-    <div class="box box3" id="box3"></div>
+<div class="shape shape1" id="shape1"></div>
+<div class="shape shape2" id="shape2"></div>
+<div class="shape shape3" id="shape3"></div>
 
-  </div>
+<div class="device" id="device"></div>
+
+</div>
 </section>
 
-<footer>Au revoir</footer>
-
 <script>
-const section = document.getElementById('scrollSection');
-const title = document.getElementById('title');
-const box1 = document.getElementById('box1');
-const box2 = document.getElementById('box2');
-const box3 = document.getElementById('box3');
+const section = document.getElementById("section")
 
-window.addEventListener('scroll', () => {
-  const rect = section.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
+const title1 = document.getElementById("title1")
+const title2 = document.getElementById("title2")
+const title3 = document.getElementById("title3")
 
-  let progress = 0;
+const sub = document.getElementById("sub")
 
-  if(rect.top <= 0 && rect.bottom >= windowHeight){
-    progress = Math.abs(rect.top) / (rect.height - windowHeight);
-  }
+const shape1 = document.getElementById("shape1")
+const shape2 = document.getElementById("shape2")
+const shape3 = document.getElementById("shape3")
 
-  progress = Math.min(Math.max(progress, 0), 1);
+const device = document.getElementById("device")
+const glow = document.getElementById("glow")
 
-  /* TITLE */
-  title.style.opacity = progress * 2;
-  title.style.transform = `translateY(${100 - progress*100}px)`;
+window.addEventListener("scroll", () => {
 
-  /* BOX 1 */
-  box1.style.opacity = progress * 1.2;
-  box1.style.transform = `
-    scale(${0.3 + progress})
-    rotate(${progress*360}deg)
-    translateY(${progress * -100}px)
-  `;
+const rect = section.getBoundingClientRect()
+const vh = window.innerHeight
 
-  /* BOX 2 */
-  const p2 = Math.max(0, progress - 0.2);
-  box2.style.opacity = p2 * 1.5;
-  box2.style.transform = `
-    scale(${0.3 + p2})
-    rotate(${p2*360}deg)
-    translateY(${p2 * 120}px)
-  `;
+let progress = 0
 
-  /* BOX 3 */
-  const p3 = Math.max(0, progress - 0.4);
-  box3.style.opacity = p3 * 1.5;
-  box3.style.transform = `
-    scale(${0.3 + p3})
-    rotate(${p3*360}deg)
-    translateY(${p3 * -150}px)
-  `;
+if(rect.top <= 0 && rect.bottom >= vh){
+progress = Math.abs(rect.top) / (rect.height - vh)
+}
 
-});
+progress = Math.min(Math.max(progress,0),1)
+
+/* PHASES */
+const p1 = Math.min(progress*3,1)
+const p2 = Math.min(Math.max((progress-.33)*3,0),1)
+const p3 = Math.min(Math.max((progress-.66)*3,0),1)
+
+/* TITLE 1 */
+title1.style.opacity = 1-p2
+title1.style.transform = `translateY(${100 - p1*100}px)`
+
+/* TITLE 2 */
+title2.style.opacity = p2 - p3
+title2.style.transform = `translateY(${100 - p2*100}px)`
+
+/* TITLE 3 */
+title3.style.opacity = p3
+title3.style.transform = `translateY(${100 - p3*100}px)`
+
+/* SUB */
+sub.style.opacity = p3
+sub.style.transform = `translateY(${60 - p3*60}px)`
+
+/* DEVICE */
+device.style.opacity = p2
+
+device.style.transform = `
+scale(${0.6 + p2*0.5})
+rotate(${p2*10}deg)
+`
+
+/* GLOW */
+glow.style.opacity = p2
+glow.style.transform = `scale(${0.8 + p2})`
+
+/* SHAPES PARALLAX */
+shape1.style.opacity = p2
+shape1.style.transform = `
+translate(
+${-300 + progress*600}px,
+${200 - progress*400}px
+)
+rotate(${progress*180}deg)
+`
+
+shape2.style.opacity = p2
+shape2.style.transform = `
+translate(
+${400 - progress*700}px,
+${-200 + progress*500}px
+)
+rotate(${progress*-140}deg)
+`
+
+shape3.style.opacity = p3
+shape3.style.transform = `
+translate(
+${-200 + progress*300}px,
+${300 - progress*600}px
+)
+rotate(${progress*220}deg)
+`
+
+})
 </script>
 
 </body>
