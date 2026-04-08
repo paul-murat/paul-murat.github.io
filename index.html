@@ -3,116 +3,160 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bonjour Scroll</title>
+  <title>Scroll Animation Apple Style</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.6;
-      color: #111;
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body{
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color:#111;
+      overflow-x:hidden;
     }
 
-    header {
-      position: sticky;
-      top: 0;
-      background: white;
-      padding: 40px 20px;
-      text-align: center;
-      font-size: 42px;
-      font-weight: bold;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      z-index: 10;
+    header{
+      position:fixed;
+      top:0;
+      width:100%;
+      background:white;
+      text-align:center;
+      padding:30px;
+      font-size:42px;
+      font-weight:600;
+      z-index:100;
+      box-shadow:0 5px 20px rgba(0,0,0,0.05);
     }
 
-    section {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
+    .spacer{
+      height:120vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      color:#666;
     }
 
-    .spacer { background: #f5f5f5; }
-
-    .animation-zone {
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      overflow: hidden;
-      position: relative;
+    .scroll-section{
+      height:300vh; /* grande zone pour animation liée au scroll */
+      position:relative;
+      background:black;
+      color:white;
     }
 
-    .box {
-      width: 80px;
-      height: 80px;
-      background: white;
-      position: absolute;
-      border-radius: 16px;
-      opacity: 0;
-      transform: translateY(100px) scale(0.5);
+    .sticky{
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
-    .box:nth-child(1) { left: 15%; top: 40%; }
-    .box:nth-child(2) { left: 45%; top: 30%; }
-    .box:nth-child(3) { left: 70%; top: 55%; }
-
-    .animate .box {
-      animation: pop 1s ease forwards;
+    .title{
+      position:absolute;
+      font-size:64px;
+      font-weight:600;
+      opacity:0;
+      transform:translateY(100px);
     }
 
-    .animate .box:nth-child(2) { animation-delay: .2s; }
-    .animate .box:nth-child(3) { animation-delay: .4s; }
-
-    @keyframes pop {
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1) rotate(360deg);
-      }
+    .box{
+      position:absolute;
+      width:120px;
+      height:120px;
+      border-radius:24px;
+      background:linear-gradient(135deg,#0ea5e9,#6366f1);
+      opacity:0;
+      transform:scale(.3) rotate(0deg);
     }
 
-    footer {
-      height: 40vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      background: #111;
-      color: white;
+    .box1{ left:20%; top:50%; }
+    .box2{ left:50%; top:30%; }
+    .box3{ left:75%; top:60%; }
+
+    footer{
+      height:60vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:40px;
+      background:#111;
+      color:white;
     }
+
   </style>
 </head>
 <body>
 
-<header>
-  Bonjour
-</header>
+<header>Bonjour</header>
 
-<section class="spacer">Scroll ↓</section>
-<section class="spacer">Encore ↓</section>
-<section class="spacer">Encore ↓</section>
+<div class="spacer">Scroll ↓</div>
+<div class="spacer">Encore ↓</div>
 
-<section class="animation-zone" id="animationZone">
-  <div class="box"></div>
-  <div class="box"></div>
-  <div class="box"></div>
+<section class="scroll-section" id="scrollSection">
+  <div class="sticky">
+
+    <div class="title" id="title">Animations au scroll</div>
+
+    <div class="box box1" id="box1"></div>
+    <div class="box box2" id="box2"></div>
+    <div class="box box3" id="box3"></div>
+
+  </div>
 </section>
 
-<footer>
-  Au revoir
-</footer>
+<footer>Au revoir</footer>
 
 <script>
-  const zone = document.getElementById('animationZone');
+const section = document.getElementById('scrollSection');
+const title = document.getElementById('title');
+const box1 = document.getElementById('box1');
+const box2 = document.getElementById('box2');
+const box3 = document.getElementById('box3');
 
-  let triggered = false;
+window.addEventListener('scroll', () => {
+  const rect = section.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
 
-  window.addEventListener('scroll', () => {
-    const scrollPosition = window.scrollY;
-    const triggerPoint = window.innerHeight * 3; // ~3 scrolls
+  let progress = 0;
 
-    if (scrollPosition > triggerPoint && !triggered) {
-      zone.classList.add('animate');
-      triggered = true;
-    }
-  });
+  if(rect.top <= 0 && rect.bottom >= windowHeight){
+    progress = Math.abs(rect.top) / (rect.height - windowHeight);
+  }
+
+  progress = Math.min(Math.max(progress, 0), 1);
+
+  /* TITLE */
+  title.style.opacity = progress * 2;
+  title.style.transform = `translateY(${100 - progress*100}px)`;
+
+  /* BOX 1 */
+  box1.style.opacity = progress * 1.2;
+  box1.style.transform = `
+    scale(${0.3 + progress})
+    rotate(${progress*360}deg)
+    translateY(${progress * -100}px)
+  `;
+
+  /* BOX 2 */
+  const p2 = Math.max(0, progress - 0.2);
+  box2.style.opacity = p2 * 1.5;
+  box2.style.transform = `
+    scale(${0.3 + p2})
+    rotate(${p2*360}deg)
+    translateY(${p2 * 120}px)
+  `;
+
+  /* BOX 3 */
+  const p3 = Math.max(0, progress - 0.4);
+  box3.style.opacity = p3 * 1.5;
+  box3.style.transform = `
+    scale(${0.3 + p3})
+    rotate(${p3*360}deg)
+    translateY(${p3 * -150}px)
+  `;
+
+});
 </script>
 
 </body>
