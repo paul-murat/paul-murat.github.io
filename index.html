@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Apple Style Scroll Animation</title>
+<title>Smooth Apple Scroll</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -15,7 +15,6 @@ color:white;
 overflow-x:hidden;
 }
 
-/* SECTION SCROLL */
 .scroll-section{
 height:500vh;
 position:relative;
@@ -31,7 +30,6 @@ align-items:center;
 justify-content:center;
 }
 
-/* TITRES */
 .title{
 position:absolute;
 font-size:clamp(40px,6vw,90px);
@@ -39,7 +37,8 @@ font-weight:600;
 letter-spacing:-0.02em;
 text-align:center;
 opacity:0;
-transform:translateY(100px);
+transform:translate3d(0,100px,0);
+will-change: transform, opacity;
 }
 
 .subtitle{
@@ -48,15 +47,15 @@ margin-top:120px;
 font-size:22px;
 color:#aaa;
 opacity:0;
-transform:translateY(60px);
+transform:translate3d(0,60px,0);
+will-change: transform, opacity;
 }
 
-/* SHAPES */
 .shape{
 position:absolute;
 border-radius:30px;
-filter:blur(0px);
 opacity:0;
+will-change: transform, opacity;
 }
 
 .shape1{
@@ -77,7 +76,6 @@ height:200px;
 background:linear-gradient(135deg,#34c759,#00c7be);
 }
 
-/* CENTER OBJECT */
 .device{
 position:absolute;
 width:260px;
@@ -85,11 +83,10 @@ height:520px;
 border-radius:40px;
 background:linear-gradient(180deg,#111,#000);
 border:1px solid rgba(255,255,255,0.1);
-box-shadow:
-0 0 0 1px rgba(255,255,255,0.05),
-0 40px 120px rgba(0,0,0,0.8);
+box-shadow:0 40px 120px rgba(0,0,0,0.8);
 opacity:0;
 transform:scale(.6);
+will-change: transform, opacity;
 }
 
 .glow{
@@ -97,9 +94,9 @@ position:absolute;
 width:600px;
 height:600px;
 border-radius:50%;
-background:radial-gradient(circle,rgba(0,140,255,.4),transparent);
-filter:blur(40px);
+background:radial-gradient(circle,rgba(0,140,255,.35),transparent);
 opacity:0;
+will-change: transform, opacity;
 }
 
 </style>
@@ -132,7 +129,6 @@ const section = document.getElementById("section")
 const title1 = document.getElementById("title1")
 const title2 = document.getElementById("title2")
 const title3 = document.getElementById("title3")
-
 const sub = document.getElementById("sub")
 
 const shape1 = document.getElementById("shape1")
@@ -142,81 +138,82 @@ const shape3 = document.getElementById("shape3")
 const device = document.getElementById("device")
 const glow = document.getElementById("glow")
 
-window.addEventListener("scroll", () => {
+let target = 0
+let current = 0
 
+window.addEventListener("scroll", () => {
 const rect = section.getBoundingClientRect()
 const vh = window.innerHeight
 
-let progress = 0
-
 if(rect.top <= 0 && rect.bottom >= vh){
-progress = Math.abs(rect.top) / (rect.height - vh)
+const progress = Math.abs(rect.top) / (rect.height - vh)
+target = Math.min(Math.max(progress,0),1)
 }
+})
 
-progress = Math.min(Math.max(progress,0),1)
+function animate(){
 
-/* PHASES */
+/* LERP smoothing */
+current += (target - current) * 0.08
+
+const progress = current
+
 const p1 = Math.min(progress*3,1)
 const p2 = Math.min(Math.max((progress-.33)*3,0),1)
 const p3 = Math.min(Math.max((progress-.66)*3,0),1)
 
-/* TITLE 1 */
+/* TITLES */
+
 title1.style.opacity = 1-p2
-title1.style.transform = `translateY(${100 - p1*100}px)`
+title1.style.transform = `translate3d(0,${100 - p1*100}px,0)`
 
-/* TITLE 2 */
 title2.style.opacity = p2 - p3
-title2.style.transform = `translateY(${100 - p2*100}px)`
+title2.style.transform = `translate3d(0,${100 - p2*100}px,0)`
 
-/* TITLE 3 */
 title3.style.opacity = p3
-title3.style.transform = `translateY(${100 - p3*100}px)`
+title3.style.transform = `translate3d(0,${100 - p3*100}px,0)`
 
-/* SUB */
 sub.style.opacity = p3
-sub.style.transform = `translateY(${60 - p3*60}px)`
+sub.style.transform = `translate3d(0,${60 - p3*60}px,0)`
 
 /* DEVICE */
+
 device.style.opacity = p2
 
 device.style.transform = `
 scale(${0.6 + p2*0.5})
-rotate(${p2*10}deg)
+rotate(${p2*8}deg)
 `
 
 /* GLOW */
+
 glow.style.opacity = p2
 glow.style.transform = `scale(${0.8 + p2})`
 
-/* SHAPES PARALLAX */
+/* SHAPES */
+
 shape1.style.opacity = p2
-shape1.style.transform = `
-translate(
+shape1.style.transform = `translate3d(
 ${-300 + progress*600}px,
-${200 - progress*400}px
-)
-rotate(${progress*180}deg)
-`
+${200 - progress*400}px,
+0) rotate(${progress*180}deg)`
 
 shape2.style.opacity = p2
-shape2.style.transform = `
-translate(
+shape2.style.transform = `translate3d(
 ${400 - progress*700}px,
-${-200 + progress*500}px
-)
-rotate(${progress*-140}deg)
-`
+${-200 + progress*500}px,
+0) rotate(${progress*-140}deg)`
 
 shape3.style.opacity = p3
-shape3.style.transform = `
-translate(
+shape3.style.transform = `translate3d(
 ${-200 + progress*300}px,
-${300 - progress*600}px
-)
-rotate(${progress*220}deg)
-`
+${300 - progress*600}px,
+0) rotate(${progress*220}deg)`
 
-})
+requestAnimationFrame(animate)
+}
+
+animate()
 </script>
 
 </body>
