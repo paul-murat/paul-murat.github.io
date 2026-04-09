@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Apple Scroll V3</title>
+<title>Joyeux Anniversaire Jade</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -16,7 +16,7 @@ overflow-x:hidden;
 }
 
 .scroll-section{
-height:600vh;
+height:900vh;
 position:relative;
 }
 
@@ -32,10 +32,10 @@ justify-content:center;
 
 .title{
 position:absolute;
-font-size:clamp(42px,7vw,110px);
+font-size:clamp(40px,7vw,110px);
 font-weight:600;
-letter-spacing:-0.03em;
 text-align:center;
+letter-spacing:-0.03em;
 opacity:0;
 transform:translate3d(0,120px,0) scale(.9);
 will-change:transform,opacity;
@@ -44,14 +44,34 @@ will-change:transform,opacity;
 .subtitle{
 position:absolute;
 margin-top:140px;
-font-size:22px;
-color:#aaa;
+font-size:24px;
+color:#ccc;
 opacity:0;
 transform:translate3d(0,60px,0);
 will-change:transform,opacity;
 }
 
-/* BACKGROUND BLOBS */
+/* PHOTOS */
+.photo{
+position:absolute;
+width:280px;
+height:380px;
+background:#111;
+border-radius:20px;
+overflow:hidden;
+opacity:0;
+transform:scale(.8);
+box-shadow:0 30px 80px rgba(0,0,0,.8);
+will-change:transform,opacity;
+}
+
+.photo img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* confetti blobs */
 .blob{
 position:absolute;
 border-radius:50%;
@@ -60,39 +80,31 @@ opacity:0;
 will-change:transform,opacity;
 }
 
-.blob1{
-width:600px;
-height:600px;
-background:#0071e3;
-}
+.b1{width:600px;height:600px;background:#ff2d55}
+.b2{width:500px;height:500px;background:#007aff}
+.b3{width:400px;height:400px;background:#34c759}
+.b4{width:350px;height:350px;background:#af52de}
 
-.blob2{
-width:500px;
-height:500px;
-background:#ff2d55;
-}
-
-.blob3{
-width:400px;
-height:400px;
-background:#34c759;
-}
-
-.blob4{
-width:300px;
-height:300px;
-background:#af52de;
-}
-
-/* LIGHT GRADIENT */
-.gradient{
+/* gift */
+.gift{
 position:absolute;
-width:1400px;
-height:1400px;
-border-radius:50%;
-background:radial-gradient(circle,rgba(0,120,255,.25),transparent 60%);
+width:320px;
+height:420px;
+border-radius:30px;
+background:linear-gradient(180deg,#111,#000);
+border:1px solid rgba(255,255,255,.1);
 opacity:0;
+transform:scale(.6) rotate(-10deg);
 will-change:transform,opacity;
+box-shadow:0 40px 120px rgba(0,0,0,.9);
+}
+
+.gift-text{
+position:absolute;
+margin-top:380px;
+font-size:28px;
+opacity:0;
+color:#ddd;
 }
 
 </style>
@@ -102,19 +114,29 @@ will-change:transform,opacity;
 <section class="scroll-section" id="section">
 <div class="sticky">
 
-<div class="gradient" id="gradient"></div>
+<div class="blob b1" id="b1"></div>
+<div class="blob b2" id="b2"></div>
+<div class="blob b3" id="b3"></div>
+<div class="blob b4" id="b4"></div>
 
-<div class="blob blob1" id="b1"></div>
-<div class="blob blob2" id="b2"></div>
-<div class="blob blob3" id="b3"></div>
-<div class="blob blob4" id="b4"></div>
+<div class="title" id="t1">Joyeux anniversaire</div>
+<div class="title" id="t2">Jade</div>
+<div class="title" id="t3">26 ans aujourd'hui</div>
+<div class="title" id="t4">Une journée spéciale</div>
+<div class="title" id="t5">Pour quelqu'un d'exceptionnel</div>
+<div class="title" id="t6">Quelques souvenirs...</div>
+<div class="title" id="t7">Et une surprise à la fin</div>
 
-<div class="title" id="t1">Une nouvelle façon</div>
-<div class="title" id="t2">de naviguer</div>
-<div class="title" id="t3">Tout réagit au scroll</div>
-<div class="title" id="t4">Fluide. Naturel. Moderne.</div>
+<div class="subtitle" id="sub">Scroll pour continuer</div>
 
-<div class="subtitle" id="sub">Inspiré des animations Apple</div>
+<!-- PHOTOS placeholders -->
+<div class="photo" id="p1"></div>
+<div class="photo" id="p2"></div>
+<div class="photo" id="p3"></div>
+<div class="photo" id="p4"></div>
+
+<div class="gift" id="gift"></div>
+<div class="gift-text" id="giftText">Ton cadeau t'attend…</div>
 
 </div>
 </section>
@@ -122,19 +144,21 @@ will-change:transform,opacity;
 <script>
 const section = document.getElementById("section")
 
-const t1 = document.getElementById("t1")
-const t2 = document.getElementById("t2")
-const t3 = document.getElementById("t3")
-const t4 = document.getElementById("t4")
+const titles = [
+ t1,t2,t3,t4,t5,t6,t7
+]
 
 const sub = document.getElementById("sub")
 
-const b1 = document.getElementById("b1")
-const b2 = document.getElementById("b2")
-const b3 = document.getElementById("b3")
-const b4 = document.getElementById("b4")
+const p1 = document.getElementById("p1")
+const p2 = document.getElementById("p2")
+const p3 = document.getElementById("p3")
+const p4 = document.getElementById("p4")
 
-const gradient = document.getElementById("gradient")
+const gift = document.getElementById("gift")
+const giftText = document.getElementById("giftText")
+
+const blobs = [b1,b2,b3,b4]
 
 let target = 0
 let current = 0
@@ -151,49 +175,56 @@ target = Math.min(Math.max(progress,0),1)
 
 function animate(){
 
-current += (target - current) * 0.06
+current += (target-current)*0.05
 const p = current
 
-const p1 = Math.min(p*4,1)
-const p2 = Math.min(Math.max((p-.25)*4,0),1)
-const p3 = Math.min(Math.max((p-.5)*4,0),1)
-const p4 = Math.min(Math.max((p-.75)*4,0),1)
+/* timeline */
+const steps = titles.length
 
-/* TEXT */
+for(let i=0;i<titles.length;i++){
 
-t1.style.opacity = 1-p2
-t1.style.transform = `translate3d(0,${120-p1*120}px,0) scale(${0.9+p1*0.1})`
+const start = i/steps
+const end = (i+1)/steps
 
-t2.style.opacity = p2-p3
-t2.style.transform = `translate3d(0,${120-p2*120}px,0) scale(${0.9+p2*0.1})`
+let local = (p-start)/(end-start)
+local = Math.min(Math.max(local,0),1)
 
-t3.style.opacity = p3-p4
-t3.style.transform = `translate3d(0,${120-p3*120}px,0) scale(${0.9+p3*0.1})`
+const el = titles[i]
 
-t4.style.opacity = p4
-t4.style.transform = `translate3d(0,${120-p4*120}px,0) scale(${0.9+p4*0.1})`
+el.style.opacity = local>0 && local<1 ? 1 : 0
+el.style.transform = `translate3d(0,${120-local*120}px,0) scale(${0.9+local*0.1})`
+}
 
-sub.style.opacity = p4
-sub.style.transform = `translate3d(0,${60-p4*60}px,0)`
+/* photos */
+const photoStart = .45
+const photoProgress = Math.max(0,(p-photoStart)*2)
 
-/* GRADIENT */
+p1.style.opacity = photoProgress
+p1.style.transform = `translate3d(${ -400 + photoProgress*500}px,-50px,0) scale(${0.8+photoProgress*.2})`
 
-gradient.style.opacity = p
-gradient.style.transform = `scale(${0.8 + p*0.6})`
+p2.style.opacity = photoProgress
+p2.style.transform = `translate3d(${ 400 - photoProgress*500}px,80px,0) scale(${0.8+photoProgress*.2})`
 
-/* BLOBS PARALLAX */
+p3.style.opacity = photoProgress
+p3.style.transform = `translate3d(${ -200 + photoProgress*300}px,220px,0)`
 
-b1.style.opacity = p
-b1.style.transform = `translate3d(${ -500 + p*900}px,${200 - p*400}px,0)`
+p4.style.opacity = photoProgress
+p4.style.transform = `translate3d(${ 200 - photoProgress*300}px,-220px,0)`
 
-b2.style.opacity = p
-b2.style.transform = `translate3d(${ 400 - p*800}px,${-300 + p*600}px,0)`
+/* gift reveal */
+const giftStart = .8
+const g = Math.max(0,(p-giftStart)*5)
 
-b3.style.opacity = p
-b3.style.transform = `translate3d(${ -300 + p*500}px,${400 - p*800}px,0)`
+gift.style.opacity = g
+gift.style.transform = `scale(${0.6+g*.4}) rotate(${ -10 + g*10 }deg)`
 
-b4.style.opacity = p
-b4.style.transform = `translate3d(${ 300 - p*600}px,${300 - p*500}px,0)`
+giftText.style.opacity = g
+
+/* blobs */
+blobs.forEach((b,i)=>{
+ b.style.opacity = .4
+ b.style.transform = `translate3d(${Math.sin(p*6+i)*400}px,${Math.cos(p*5+i)*300}px,0)`
+})
 
 requestAnimationFrame(animate)
 }
