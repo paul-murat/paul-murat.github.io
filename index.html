@@ -16,7 +16,7 @@ overflow-x:hidden;
 }
 
 .scroll-section{
-height:900vh;
+height:1200vh;
 position:relative;
 }
 
@@ -47,22 +47,25 @@ margin-top:140px;
 font-size:24px;
 color:#ccc;
 opacity:0;
-transform:translate3d(0,60px,0);
-will-change:transform,opacity;
 }
 
-/* PHOTOS */
+.big-number{
+position:absolute;
+font-size:clamp(120px,20vw,400px);
+font-weight:700;
+opacity:0;
+letter-spacing:-0.05em;
+}
+
 .photo{
 position:absolute;
 width:280px;
 height:380px;
-background:#111;
 border-radius:20px;
 overflow:hidden;
 opacity:0;
 transform:scale(.8);
 box-shadow:0 30px 80px rgba(0,0,0,.8);
-will-change:transform,opacity;
 }
 
 .photo img{
@@ -71,13 +74,11 @@ height:100%;
 object-fit:cover;
 }
 
-/* confetti blobs */
 .blob{
 position:absolute;
 border-radius:50%;
 filter:blur(40px);
-opacity:0;
-will-change:transform,opacity;
+opacity:.3;
 }
 
 .b1{width:600px;height:600px;background:#ff2d55}
@@ -85,7 +86,6 @@ will-change:transform,opacity;
 .b3{width:400px;height:400px;background:#34c759}
 .b4{width:350px;height:350px;background:#af52de}
 
-/* gift */
 .gift{
 position:absolute;
 width:320px;
@@ -95,21 +95,53 @@ background:linear-gradient(180deg,#111,#000);
 border:1px solid rgba(255,255,255,.1);
 opacity:0;
 transform:scale(.6) rotate(-10deg);
-will-change:transform,opacity;
 box-shadow:0 40px 120px rgba(0,0,0,.9);
 }
 
 .gift-text{
 position:absolute;
 margin-top:380px;
-font-size:28px;
+font-size:30px;
 opacity:0;
-color:#ddd;
+}
+
+.final-text{
+position:absolute;
+font-size:clamp(40px,6vw,90px);
+text-align:center;
+opacity:0;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+pointer-events:none;
+}
+
+.music-btn{
+position:fixed;
+top:20px;
+right:20px;
+background:white;
+color:black;
+padding:10px 16px;
+border-radius:20px;
+font-weight:600;
+cursor:pointer;
+z-index:10;
 }
 
 </style>
 </head>
 <body>
+
+<div class="music-btn" onclick="toggleMusic()">🎵 Musique</div>
+<audio id="music" loop>
+<source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="confetti"></canvas>
 
 <section class="scroll-section" id="section">
 <div class="sticky">
@@ -121,115 +153,137 @@ color:#ddd;
 
 <div class="title" id="t1">Joyeux anniversaire</div>
 <div class="title" id="t2">Jade</div>
-<div class="title" id="t3">26 ans aujourd'hui</div>
-<div class="title" id="t4">Une journée spéciale</div>
-<div class="title" id="t5">Pour quelqu'un d'exceptionnel</div>
-<div class="title" id="t6">Quelques souvenirs...</div>
-<div class="title" id="t7">Et une surprise à la fin</div>
+<div class="big-number" id="num">26</div>
+<div class="title" id="t3">26 ans de sourire</div>
+<div class="title" id="t4">26 ans de souvenirs</div>
+<div class="title" id="t5">26 ans incroyables</div>
+<div class="title" id="t6">Quelques moments avec toi</div>
+<div class="title" id="t7">Et ce n'est que le début…</div>
+<div class="title" id="t8">Une surprise pour toi</div>
 
-<div class="subtitle" id="sub">Scroll pour continuer</div>
-
-<!-- PHOTOS placeholders -->
 <div class="photo" id="p1"></div>
 <div class="photo" id="p2"></div>
 <div class="photo" id="p3"></div>
 <div class="photo" id="p4"></div>
+<div class="photo" id="p5"></div>
+<div class="photo" id="p6"></div>
 
 <div class="gift" id="gift"></div>
-<div class="gift-text" id="giftText">Ton cadeau t'attend…</div>
+<div class="gift-text" id="giftText">Un sac à main rien que pour toi</div>
+
+<div class="final-text" id="final">Joyeux anniversaire Jade ❤️</div>
 
 </div>
 </section>
 
 <script>
 const section = document.getElementById("section")
+const titles=[t1,t2,t3,t4,t5,t6,t7,t8]
 
-const titles = [
- t1,t2,t3,t4,t5,t6,t7
-]
+let target=0,current=0
 
-const sub = document.getElementById("sub")
-
-const p1 = document.getElementById("p1")
-const p2 = document.getElementById("p2")
-const p3 = document.getElementById("p3")
-const p4 = document.getElementById("p4")
-
-const gift = document.getElementById("gift")
-const giftText = document.getElementById("giftText")
-
-const blobs = [b1,b2,b3,b4]
-
-let target = 0
-let current = 0
-
-window.addEventListener("scroll", () => {
-const rect = section.getBoundingClientRect()
-const vh = window.innerHeight
-
-if(rect.top <= 0 && rect.bottom >= vh){
-const progress = Math.abs(rect.top) / (rect.height - vh)
-target = Math.min(Math.max(progress,0),1)
+window.addEventListener("scroll",()=>{
+const rect=section.getBoundingClientRect()
+const vh=window.innerHeight
+if(rect.top<=0&&rect.bottom>=vh){
+const progress=Math.abs(rect.top)/(rect.height-vh)
+target=Math.min(Math.max(progress,0),1)
 }
 })
 
 function animate(){
+current+=(target-current)*0.05
+const p=current
 
-current += (target-current)*0.05
-const p = current
+/* titles */
+titles.forEach((el,i)=>{
+const start=i/titles.length
+const end=(i+1)/titles.length
+let local=(p-start)/(end-start)
+local=Math.min(Math.max(local,0),1)
 
-/* timeline */
-const steps = titles.length
+el.style.opacity=local
+el.style.transform=`translate3d(0,${120-local*120}px,0) scale(${0.9+local*.1})`
+})
 
-for(let i=0;i<titles.length;i++){
-
-const start = i/steps
-const end = (i+1)/steps
-
-let local = (p-start)/(end-start)
-local = Math.min(Math.max(local,0),1)
-
-const el = titles[i]
-
-el.style.opacity = local>0 && local<1 ? 1 : 0
-el.style.transform = `translate3d(0,${120-local*120}px,0) scale(${0.9+local*0.1})`
-}
+/* 26 */
+const n=Math.max(0,(p-.15)*3)
+num.style.opacity=n
+num.style.transform=`scale(${0.5+n*.8})`
 
 /* photos */
-const photoStart = .45
-const photoProgress = Math.max(0,(p-photoStart)*2)
+const ph=Math.max(0,(p-.35)*2)
 
-p1.style.opacity = photoProgress
-p1.style.transform = `translate3d(${ -400 + photoProgress*500}px,-50px,0) scale(${0.8+photoProgress*.2})`
+p1.style.opacity=ph
+p1.style.transform=`translate3d(${ -500+ph*600}px,-200px,0)`
 
-p2.style.opacity = photoProgress
-p2.style.transform = `translate3d(${ 400 - photoProgress*500}px,80px,0) scale(${0.8+photoProgress*.2})`
+p2.style.opacity=ph
+p2.style.transform=`translate3d(${ 500-ph*600}px,200px,0)`
 
-p3.style.opacity = photoProgress
-p3.style.transform = `translate3d(${ -200 + photoProgress*300}px,220px,0)`
+p3.style.opacity=ph
+p3.style.transform=`translate3d(${ -200+ph*300}px,250px,0)`
 
-p4.style.opacity = photoProgress
-p4.style.transform = `translate3d(${ 200 - photoProgress*300}px,-220px,0)`
+p4.style.opacity=ph
+p4.style.transform=`translate3d(${ 200-ph*300}px,-250px,0)`
 
-/* gift reveal */
-const giftStart = .8
-const g = Math.max(0,(p-giftStart)*5)
+p5.style.opacity=ph
+p5.style.transform=`translate3d(${ -100+ph*200}px,-350px,0)`
 
-gift.style.opacity = g
-gift.style.transform = `scale(${0.6+g*.4}) rotate(${ -10 + g*10 }deg)`
+p6.style.opacity=ph
+p6.style.transform=`translate3d(${ 100-ph*200}px,350px,0)`
 
-giftText.style.opacity = g
+/* gift */
+const g=Math.max(0,(p-.75)*4)
 
-/* blobs */
-blobs.forEach((b,i)=>{
- b.style.opacity = .4
- b.style.transform = `translate3d(${Math.sin(p*6+i)*400}px,${Math.cos(p*5+i)*300}px,0)`
-})
+gift.style.opacity=g
+gift.style.transform=`scale(${0.6+g*.4}) rotate(${ -10+g*10 }deg)`
+
+giftText.style.opacity=g
+
+/* final */
+const f=Math.max(0,(p-.9)*5)
+final.style.opacity=f
+final.style.transform=`scale(${0.8+f*.2})`
 
 requestAnimationFrame(animate)
 }
-
 animate()
+
+/* confetti */
+const canvas=document.getElementById("confetti")
+const ctx=canvas.getContext("2d")
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+
+const confetti=Array.from({length:150},()=>({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*6,
+d:Math.random()*100
+}))
+
+function drawConfetti(){
+ctx.clearRect(0,0,canvas.width,canvas.height)
+confetti.forEach(c=>{
+ctx.beginPath()
+ctx.arc(c.x,c.y,c.r,0,Math.PI*2)
+ctx.fillStyle=`hsl(${c.d*3},100%,50%)`
+ctx.fill()
+
+c.y+=1
+if(c.y>canvas.height)c.y=0
+})
+requestAnimationFrame(drawConfetti)
+}
+
+drawConfetti()
+
+function toggleMusic(){
+const m=document.getElementById("music")
+if(m.paused) m.play()
+else m.pause()
+}
+
 </script>
 
 </body>
