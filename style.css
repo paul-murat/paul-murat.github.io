@@ -1,0 +1,92 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	background: #000;
+	color: white;
+}
+
+.scroll-section {
+	height: 600vh;
+	position: relative;
+}
+
+.sticky {
+	position: sticky;
+	top: 0;
+	height: 100vh;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.title {
+	position: absolute;
+	font-size: clamp(42px, 7vw, 110px);
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	text-align: center;
+	opacity: 0;
+	transform: translate3d(0, 120px, 0) scale(0.9);
+	will-change: transform, opacity;
+}
+
+.subtitle {
+	position: absolute;
+	margin-top: 140px;
+	font-size: 22px;
+	color: #aaa;
+	opacity: 0;
+	transform: translate3d(0, 60px, 0);
+	will-change: transform, opacity;
+}
+
+/* BACKGROUND BLOBS */
+.blob {
+	position: absolute;
+	border-radius: 50%;
+	filter: blur(40px);
+	opacity: 0;
+	will-change: transform, opacity;
+}
+
+.blob1 {
+	width: 600px;
+	height: 600px;
+	background: #0071e3;
+}
+
+.blob2 {
+	width: 500px;
+	height: 500px;
+	background: #ff2d55;
+}
+
+.blob3 {
+	width: 400px;
+	height: 400px;
+	background: #34c759;
+}
+
+.blob4 {
+	width: 300px;
+	height: 300px;
+	background: #af52de;
+}
+
+/* LIGHT GRADIENT */
+.gradient {
+	position: absolute;
+	width: 1400px;
+	height: 1400px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(0, 120, 255, 0.25), transparent 60%);
+	opacity: 0;
+	will-change: transform, opacity;
+}
