@@ -10,6 +10,8 @@ const b2 = document.getElementById("b2");
 const b3 = document.getElementById("b3");
 const b4 = document.getElementById("b4");
 const gradient = document.getElementById("gradient");
+
+// Vérifier si les images existent avant de les sélectionner
 const img1 = document.getElementById("img1");
 const img2 = document.getElementById("img2");
 const img3 = document.getElementById("img3");
@@ -31,8 +33,6 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let confettiParticles = [];
-
 // Redimensionner le canvas au changement de fenêtre
 window.addEventListener("resize", () => {
 	canvas.width = window.innerWidth;
@@ -40,94 +40,55 @@ window.addEventListener("resize", () => {
 });
 
 // ===================================
-// CLASSE CONFETTI AVEC PHYSIQUE
+// EFFET CONFETTIS RÉALISTE AVEC CANVAS-CONFETTI
 // ===================================
 
-class Confetti {
-	constructor(x, y, color, shape) {
-		this.x = x;
-		this.y = y;
-		this.color = color;
-		this.shape = shape; // 'rect' ou 'heart'
-		this.size = Math.random() * 10 + 5;
-		this.speedX = (Math.random() - 0.5) * 15; // Vitesse horizontale aléatoire
-		this.speedY = Math.random() * 5 + 5; // Vitesse verticale
-		this.rotation = Math.random() * 360;
-		this.rotationSpeed = (Math.random() - 0.5) * 15;
-		this.opacity = 1;
+function launchRealisticConfetti() {
+	// Configuration pour un effet confetti plus doux et naturel
+	const duration = 2000; // Durée totale de l'animation
+	const animationEnd = Date.now() + duration;
+
+	function randomInRange(min, max) {
+		return Math.random() * (max - min) + min;
 	}
 
-	update() {
-		this.x += this.speedX;
-		this.y += this.speedY;
-		this.rotation += this.rotationSpeed;
-		this.speedY += 0.15; // Gravité
-		this.opacity -= 0.01; // Fade out progressif
-	}
-
-	draw() {
-		ctx.save();
-		ctx.globalAlpha = this.opacity;
-		ctx.translate(this.x, this.y);
-		ctx.rotate((this.rotation * Math.PI) / 180);
-		ctx.fillStyle = this.color;
-
-		if (this.shape === 'rect') {
-			// Carré
-			ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
-		} else if (this.shape === 'heart') {
-			// Cœur stylisé
-			ctx.beginPath();
-			const s = this.size;
-			ctx.moveTo(0, s * 0.35);
-			ctx.bezierCurveTo(-s * 0.5, -s * 0.1, -s * 0.5, -s * 0.5, 0, -s * 0.2);
-			ctx.bezierCurveTo(s * 0.5, -s * 0.5, s * 0.5, -s * 0.1, 0, s * 0.35);
-			ctx.fill();
+	(function frame() {
+		const timeLeft = animationEnd - Date.now();
+		if (timeLeft <= 0) {
+			return; // Animation terminée
 		}
 
-		ctx.restore();
-	}
+		const particleCount = Math.round(30 * (timeLeft / duration)); // Moins de particules
+
+		confetti({
+			particleCount: particleCount,
+			startVelocity: randomInRange(25, 55), // plus doux
+			spread: randomInRange(40, 60),
+			origin: {
+				x: randomInRange(0.2, 0.8),
+				y: Math.random() - 0.35
+			},
+			colors: ['#ff2d55', '#34c759', '#0071e3', '#af52de', '#ffd60a', '#ff006e', '#ff9500', '#5856d6'],
+			shapes: ['square', 'circle'],
+			scalar: randomInRange(0.85, 1.1),
+			drift: randomInRange(-0.35, 0.35),
+			gravity: randomInRange(0.75, 1.0),
+			ticks: randomInRange(180, 260)
+		});
+
+		requestAnimationFrame(frame);
+	}());
 }
 
 // ===================================
-// CRÉATION DE L'EXPLOSION DE CONFETTIS
+// FONCTION DE TEST
 // ===================================
 
-function createConfetti() {
-	const colors = ['#ff2d55', '#34c759', '#0071e3', '#af52de', '#ffd60a'];
-	const centerX = canvas.width / 2;
-	const centerY = canvas.height / 2;
+window.testConfetti = function() {
+	console.log("Test des confettis réalistes");
+	launchRealisticConfetti();
+};
 
-	// Crée 150 confettis en explosion radiale
-	for (let i = 0; i < 150; i++) {
-		const color = colors[Math.floor(Math.random() * colors.length)];
-		const shape = Math.random() > 0.4 ? 'rect' : 'heart'; // 60% carrés, 40% cœurs
-		confettiParticles.push(new Confetti(centerX, centerY, color, shape));
-	}
-}
-
-// ===================================
-// ANIMATION DES CONFETTIS
-// ===================================
-
-function animateConfetti() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-	confettiParticles.forEach((c, i) => {
-		c.update();
-		c.draw();
-
-		// Supprime les confettis hors écran ou transparents
-		if (c.y > canvas.height || c.opacity <= 0) {
-			confettiParticles.splice(i, 1);
-		}
-	});
-
-	// Continue tant qu'il y a des confettis
-	if (confettiParticles.length > 0) {
-		requestAnimationFrame(animateConfetti);
-	}
-}
 
 // ===================================
 // GESTION DU SCROLL
@@ -188,21 +149,31 @@ function animate() {
 
 	// ===== ANIMATION DES IMAGES =====
 	// Les images apparaissent avec un décalage de rotation progressif
-	img1.style.opacity = imgProgress;
-	img1.style.transform = `translate3d(-300px,${-300 + imgProgress * 300}px,0) rotate(${imgProgress * -15}deg)`;
-
-	img2.style.opacity = imgProgress;
-	img2.style.transform = `translate3d(0,${100 - imgProgress * 100}px,0) scale(${0.8 + imgProgress * 0.2})`;
-
-	img3.style.opacity = imgProgress;
-	img3.style.transform = `translate3d(300px,${-300 + imgProgress * 300}px,0) rotate(${imgProgress * 15}deg)`;
+	if (img1) {
+		img1.style.opacity = imgProgress;
+		img1.style.transform = `translate3d(-300px,${-300 + imgProgress * 300}px,0) rotate(${imgProgress * -15}deg)`;
+	}
+	
+	if (img2) {
+		img2.style.opacity = imgProgress;
+		img2.style.transform = `translate3d(0,${100 - imgProgress * 100}px,0) scale(${0.8 + imgProgress * 0.2})`;
+	}
+	
+	if (img3) {
+		img3.style.opacity = imgProgress;
+		img3.style.transform = `translate3d(300px,${-300 + imgProgress * 300}px,0) rotate(${imgProgress * 15}deg)`;
+	}
 
 	// ===== DÉCLENCHEMENT DES CONFETTIS =====
-	// Les confettis explosent une seule fois quand le titre est centré (p >= 0.5)
-	if (p >= 0.5 && !confettiShown) {
-		createConfetti();
-		animateConfetti();
-		confettiShown = true;
+	// Les confettis explosent une seule fois quand le titre commence à apparaître (p >= 0.1)
+	if (p >= 0.1 && !confettiShown) {
+		console.log("Déclenchement des confettis réalistes !");
+		try {
+			launchRealisticConfetti();
+			confettiShown = true;
+		} catch (error) {
+			console.error("Erreur lors du déclenchement des confettis:", error);
+		}
 	}
 
 	// Boucle d'animation continue
@@ -211,3 +182,12 @@ function animate() {
 
 // Démarre l'animation
 animate();
+
+// ===================================
+// FONCTION DE TEST
+// ===================================
+
+window.testConfetti = function() {
+	confettiShown = false; // Permet de retester le déclenchement
+	launchRealisticConfetti();
+};

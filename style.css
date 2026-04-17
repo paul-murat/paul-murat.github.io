@@ -89,6 +89,7 @@ body {
 	height: 100%;
 	pointer-events: none;
 	z-index: 100;
+	background: transparent;
 }
 
 /* LIGHT GRADIENT */
@@ -116,8 +117,8 @@ body {
 /* STYLE DES IMAGES ANIMÉES */
 .animated-image {
 	position: absolute;
-	width: 200px;
-	height: 200px;
+	width: min(180px, 25vw);
+	height: min(180px, 25vw);
 	border-radius: 12px;
 	object-fit: cover;
 	opacity: 0;
@@ -126,9 +127,9 @@ body {
 }
 
 #img1 {
-	left: calc(50% - 300px);
+	left: clamp(20px, 18%, 160px);
 	top: 50%;
-	transform: translateY(-50%);
+	transform: translate(-50%, -50%);
 }
 
 #img2 {
@@ -139,7 +140,45 @@ body {
 }
 
 #img3 {
-	right: calc(50% - 300px);
+	right: clamp(20px, 18%, 160px);
 	top: 50%;
 	transform: translateY(-50%);
+}
+
+@media (max-width: 880px) {
+	#img1,
+	#img2,
+	#img3 {
+		width: min(140px, 25vw);
+		height: min(140px, 25vw);
+	}
+
+	#img1 {
+		left: 22%;
+	}
+
+	#img2 {
+		left: 50%;
+	}
+
+	#img3 {
+		right: 22%;
+	}
+}
+
+@media (max-width: 640px) {
+	#img1,
+	#img2,
+	#img3 {
+		position: relative;
+		left: 50%;
+		top: auto;
+		transform: translateX(-50%);
+		margin-top: 12px;
+	}
+
+	.images-container {
+		flex-direction: column;
+		top: 55%;
+	}
 }
