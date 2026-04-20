@@ -161,7 +161,7 @@ function animate() {
 	const titleProgress       = Math.min(p * 5, 1);                              // 0%  → 20%
 	const subProgress         = Math.min(Math.max((p - 0.2) * 5, 0), 1);         // 20% → 40%
 	const titlesFadeProgress  = Math.min(Math.max((p - 0.4) * 10, 0), 1);        // 40% → 50%
-	const slideshowProgress   = Math.min(Math.max((p - 0.5) * 1.54, 0), 1);      // 50% → 85% (étiré pour moins de sensibilité)
+	const slideshowProgress   = Math.min(Math.max((p - 0.5) * 2.9, 0), 1);       // 50% → 85% (affiche toutes les images)
 	const finalProgress       = Math.min(Math.max((p - 0.88) * 50, 0), 1);       // 88% → 90%
 	const helpProgress        = Math.min(Math.max((p - 0.91) * 50, 0), 1);       // 91% → 93%
 	const bagProgress         = Math.min(Math.max((p - 0.94) * 50, 0), 1);       // 94% → 96%
@@ -169,11 +169,11 @@ function animate() {
 
 	// ===== TITRE =====
 	t1.style.opacity = titleProgress * (1 - titlesFadeProgress);
-	t1.style.transform = `translate3d(0,${2*120 - titleProgress * 120}px,0) scale(${0.9 + titleProgress * 0.1})`;
+	t1.style.transform = `translate3d(0,${120 - titleProgress * 120}px,0) scale(${0.9 + titleProgress * 0.1})`;
 
 	// ===== SOUS-TITRE =====
 	sub.style.opacity = subProgress * (1 - titlesFadeProgress);
-	sub.style.transform = `translate3d(0,${3*60 - subProgress * 60}px,0)`;
+	sub.style.transform = `translate3d(0,${60 - subProgress * 60}px,0)`;
 
 	// ===== SLIDESHOW IMAGE PAR IMAGE =====
 	if (slideshowProgress > 0) {
@@ -191,14 +191,13 @@ function animate() {
 
 			if (i === currentIndex) {
 				const enterEase = easeOutCubic(Math.min(localProgress * 3, 1));
-				const isLast = i === totalImages - 1;
 
-				// Disparition vers le haut à la fin de la tranche (sauf dernière image)
+				// Disparition vers le haut à la fin de la tranche
 				const exitStart = 0.65;
-				const exitProgress = isLast ? 0 : Math.max(0, (localProgress - exitStart) / (1 - exitStart));
+				const exitProgress = Math.max(0, (localProgress - exitStart) / (1 - exitStart));
 				const exitEase = easeInCubic(exitProgress);
 
-				const opacity = isLast ? enterEase : enterEase * (1 - exitEase * 0.95);
+				const opacity = enterEase * (1 - exitEase * 0.95);
 				const yEnter = (1 - enterEase) * 60;
 				const yExit  = exitEase * -50;
 				const scale  = 0.88 + enterEase * 0.12 - exitEase * 0.05;
@@ -235,7 +234,7 @@ function animate() {
 
 	// ===== TEXTES FINAUX =====
 	// Faire disparaître les images quand on arrive à la fin (seuil repoussé à 0.85)
-	const fadeOutImages = Math.min(Math.max((p - 0.85) * 20, 0), 1);
+	const fadeOutImages = Math.min(Math.max((p - 0.85) * 10, 0), 1);
 	if (fadeOutImages > 0) {
 		for (let i = 0; i < imageFiles.length; i++) {
 			const item = imagesGrid.children[i];
