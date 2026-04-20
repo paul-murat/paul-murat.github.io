@@ -26,6 +26,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	padding: 20px;
+	gap: 20px;
 }
 
 .title {
@@ -33,19 +34,20 @@ body {
 	font-weight: 600;
 	letter-spacing: -0.03em;
 	text-align: center;
+	width: 100%;
 	opacity: 0;
 	transform: translate3d(0, 120px, 0) scale(0.9);
 	will-change: transform, opacity;
-	margin-bottom: 20px;
 }
 
 .subtitle {
 	font-size: 22px;
 	color: #aaa;
+	text-align: center;
+	width: 100%;
 	opacity: 0;
 	transform: translate3d(0, 60px, 0);
 	will-change: transform, opacity;
-	margin-bottom: 20px;
 }
 
 .help-text {
@@ -55,20 +57,20 @@ body {
 	transform: translate3d(0, 40px, 0);
 	will-change: transform, opacity;
 	text-align: center;
+	width: 100%;
 	font-style: italic;
-	margin-bottom: 20px;
 }
 
 .final-text {
 	font-size: clamp(32px, 5vw, 80px);
 	font-weight: 500;
 	text-align: center;
+	width: 100%;
 	opacity: 0;
 	transform: translate3d(0, 80px, 0) scale(0.95);
 	will-change: transform, opacity;
 	color: #fff;
 	text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
-	margin-bottom: 20px;
 }
 
 /* BACKGROUND BLOBS */
@@ -150,16 +152,39 @@ body {
 	justify-content: center;
 }
 
-/* IMAGE DU SLIDESHOW */
-.slideshow-image {
+/* WRAPPER D'UNE IMAGE (carte) */
+.slideshow-item {
 	position: absolute;
-	width: 300px;
-	height: 300px;
-	border-radius: 12px;
-	object-fit: cover;
-	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	opacity: 0;
 	will-change: transform, opacity;
+}
+
+/* IMAGE DU SLIDESHOW — format portrait mobile */
+.slideshow-image {
+	width: min(80vw, 340px);
+	height: min(80vw, 340px);
+	border-radius: 20px;
+	object-fit: cover;
+	box-shadow:
+		0 20px 60px rgba(0, 0, 0, 0.7),
+		0 2px 8px rgba(255, 255, 255, 0.08);
+	display: block;
+}
+
+/* Compteur de photos (style story) */
+.photo-counter {
+	position: absolute;
+	bottom: -32px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.45);
+	letter-spacing: 0.08em;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
 }
 
 /* ÉMOJI SAC */
@@ -169,7 +194,6 @@ body {
 	opacity: 0;
 	transform: translate3d(0, 100px, 0) scale(0.8);
 	will-change: transform, opacity;
-	margin-bottom: 20px;
 }
 
 /* SOUS-TITRE DU SAC */
@@ -183,4 +207,18 @@ body {
 	font-weight: 500;
 	line-height: 1.4;
 	max-width: 600px;
+}
+
+/* ===== ADAPTATIONS MOBILE ===== */
+@media (max-width: 480px) {
+	.slideshow-image {
+		width: 82vw;
+		height: 82vw;
+		border-radius: 18px;
+	}
+
+	.photo-counter {
+		bottom: -28px;
+		font-size: 12px;
+	}
 }

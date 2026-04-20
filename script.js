@@ -36,7 +36,6 @@ const imageFiles = [
 	'img/IMG_2218.jpeg',
 	'img/IMG_2288.jpeg',
 	'img/IMG_2325.jpeg',
-	'img/IMG_2330.jpeg',
 	'img/IMG_2334.jpeg',
 	'img/IMG_6567.jpeg',
 	'img/IMG_6968.jpeg'
@@ -44,14 +43,26 @@ const imageFiles = [
 
 // Générer les images HTML dans la grille
 function initializeImageGrid() {
-	imagesGrid.innerHTML = ''; // Vider la grille
-	imageFiles.forEach(imagePath => {
+	imagesGrid.innerHTML = '';
+	imageFiles.forEach((imagePath, index) => {
+		const wrapper = document.createElement('div');
+		wrapper.className = 'slideshow-item';
+		wrapper.dataset.index = index;
+
 		const img = document.createElement('img');
 		img.src = imagePath;
 		img.alt = 'Photo';
 		img.className = 'slideshow-image';
 		img.loading = 'lazy';
-		imagesGrid.appendChild(img);
+
+		// Numéro de photo (optionnel, donne un effet "story")
+		const counter = document.createElement('div');
+		counter.className = 'photo-counter';
+		counter.textContent = `${index + 1} / ${imageFiles.length}`;
+
+		wrapper.appendChild(img);
+		// wrapper.appendChild(counter);
+		imagesGrid.appendChild(wrapper);
 	});
 }
 
@@ -59,26 +70,21 @@ function initializeImageGrid() {
 // VARIABLES D'ANIMATION SCROLL
 // ===================================
 
-let target = 0; // Position cible du scroll (0 à 1)
-let current = 0; // Position actuelle interpolée
-let confettiShown = false; // Flag pour déclencher les confettis une seule fois
-
-// ===================================
-// SETUP CANVAS POUR LES CONFETTIS
-// ===================================
+let target = 0;
+let current = 0;
+let confettiShown = false;
+let lastVisibleIndex = -1; // Pour savoir quelle image était visible
 
 // ===================================
 // SETUP CANVAS POUR LES CONFETTIS
 // ===================================
 
 const canvas = document.getElementById("confetti-canvas");
-const ctx = canvas ? canvas.getContext("2d") : null;
 if (canvas) {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 }
 
-// Redimensionner le canvas au changement de fenêtre
 window.addEventListener("resize", () => {
 	if (canvas) {
 		canvas.width = window.innerWidth;
@@ -87,12 +93,11 @@ window.addEventListener("resize", () => {
 });
 
 // ===================================
-// EFFET CONFETTIS RÉALISTE AVEC CANVAS-CONFETTI
+// EFFET CONFETTIS
 // ===================================
 
 function launchRealisticConfetti() {
-	// Configuration pour un effet confetti plus doux et naturel
-	const duration = 2000; // Durée totale de l'animation
+	const duration = 2000;
 	const animationEnd = Date.now() + duration;
 
 	function randomInRange(min, max) {
@@ -101,15 +106,13 @@ function launchRealisticConfetti() {
 
 	(function frame() {
 		const timeLeft = animationEnd - Date.now();
-		if (timeLeft <= 0) {
-			return; // Animation terminée
-		}
+		if (timeLeft <= 0) return;
 
-		const particleCount = Math.round(30 * (timeLeft / duration)); // Moins de particules
+		const particleCount = Math.round(30 * (timeLeft / duration));
 
 		confetti({
 			particleCount: particleCount,
-			startVelocity: randomInRange(25, 55), // plus doux
+			startVelocity: randomInRange(25, 55),
 			spread: randomInRange(40, 60),
 			origin: {
 				x: randomInRange(0.2, 0.8),
@@ -127,25 +130,10 @@ function launchRealisticConfetti() {
 	}());
 }
 
-// ===================================
-// FONCTION DE TEST
-// ===================================
-
 window.testConfetti = function() {
-	console.log("Test des confettis réalistes");
+	confettiShown = false;
 	launchRealisticConfetti();
 };
-
-// Fonction temporaire pour déboguer l'affichage
-window.showElements = function() {
-	console.log("Forçage de l'affichage des éléments");
-	if (t1) t1.style.opacity = "1";
-	if (sub) sub.style.opacity = "1";
-	if (slideshowImage) slideshowImage.style.opacity = "1";
-	if (helpText) helpText.style.opacity = "1";
-	if (finalText) finalText.style.opacity = "1";
-};
-
 
 // ===================================
 // GESTION DU SCROLL
@@ -155,7 +143,6 @@ window.addEventListener("scroll", () => {
 	const rect = section.getBoundingClientRect();
 	const vh = window.innerHeight;
 
-	// Calcule le progrès du scroll dans la section sticky (0 à 1)
 	if (rect.top <= 0 && rect.bottom >= vh) {
 		const progress = Math.abs(rect.top) / (rect.height - vh);
 		target = Math.min(Math.max(progress, 0), 1);
@@ -167,179 +154,152 @@ window.addEventListener("scroll", () => {
 // ===================================
 
 function animate() {
-	// Interpolation lisse du scroll (easing)
 	current += (target - current) * 0.06;
 	const p = current;
 
-	// Calcul des progressions pour chaque phase
-	// titleProgress : 0 à 1 pour le titre (0% à 20% du scroll)
-	// subProgress : 0 à 1 pour le sous-titre (20% à 40% du scroll)
-	// titlesFadeProgress : 0 à 1 pour la disparition des titres (40% à 50% du scroll)
-	// slideshowProgress : 0 à 1 pour le slideshow (50% à 95% du scroll) - ENCORE PLUS LENT
-	// finalProgress : 0 à 1 pour "j'ai un cadeau pour toi" (95% à 97% du scroll)
-	// helpProgress : 0 à 1 pour "mais je vais avoir besoin de ton aide" (97% à 100% du scroll)
-	const titleProgress = Math.min(p * 5, 1);
-	const subProgress = Math.min(Math.max((p - 0.2) * 5, 0), 1);
-	const titlesFadeProgress = Math.min(Math.max((p - 0.4) * 10, 0), 1); // 40% à 50%
-	const slideshowProgress = Math.min(Math.max((p - 0.5) * 2.5, 0), 1); // 50% à 90% - AJUSTÉ
-	const finalProgress = Math.min(Math.max((p - 0.9) * 50, 0), 1); // 90% à 92%
-	const helpProgress = Math.min(Math.max((p - 0.92) * 50, 0), 1); // 92% à 94%
-	const bagProgress = Math.min(Math.max((p - 0.94) * 50, 0), 1); // 94% à 96%
-	const subtitleProgress = Math.min(Math.max((p - 0.96) * 50, 0), 1); // 96% à 100%
+	// Phases de scroll
+	const titleProgress       = Math.min(p * 5, 1);                              // 0%  → 20%
+	const subProgress         = Math.min(Math.max((p - 0.2) * 5, 0), 1);         // 20% → 40%
+	const titlesFadeProgress  = Math.min(Math.max((p - 0.4) * 10, 0), 1);        // 40% → 50%
+	const slideshowProgress   = Math.min(Math.max((p - 0.5) * 1.54, 0), 1);      // 50% → 85% (étiré pour moins de sensibilité)
+	const finalProgress       = Math.min(Math.max((p - 0.88) * 50, 0), 1);       // 88% → 90%
+	const helpProgress        = Math.min(Math.max((p - 0.91) * 50, 0), 1);       // 91% → 93%
+	const bagProgress         = Math.min(Math.max((p - 0.94) * 50, 0), 1);       // 94% → 96%
+	const subtitleProgress    = Math.min(Math.max((p - 0.96) * 50, 0), 1);       // 96% → 100%
 
-	// ===== ANIMATION DU TITRE =====
+	// ===== TITRE =====
 	t1.style.opacity = titleProgress * (1 - titlesFadeProgress);
-	t1.style.transform = `translate3d(0,${120 - titleProgress * 120}px,0) scale(${0.9 + titleProgress * 0.1})`;
+	t1.style.transform = `translate3d(0,${2*120 - titleProgress * 120}px,0) scale(${0.9 + titleProgress * 0.1})`;
 
-	// ===== ANIMATION DU SOUS-TITRE =====
+	// ===== SOUS-TITRE =====
 	sub.style.opacity = subProgress * (1 - titlesFadeProgress);
-	sub.style.transform = `translate3d(0,${60 - subProgress * 60}px,0)`;
+	sub.style.transform = `translate3d(0,${3*60 - subProgress * 60}px,0)`;
 
-	// ===== ANIMATION DU SLIDESHOW =====
+	// ===== SLIDESHOW IMAGE PAR IMAGE =====
 	if (slideshowProgress > 0) {
-		// Afficher 2 images par étape au lieu d'une seule
-		const imagesPerStep = 2;
-		const totalSteps = Math.ceil(imageFiles.length / imagesPerStep);
-		
-		// Chaque étape prend 1/totalSteps de la progression du slideshow
-		const stepProgress = slideshowProgress * totalSteps;
-		const currentStep = Math.min(Math.floor(stepProgress), totalSteps - 1);
-		
-		// Pour chaque image, déterminer si elle doit être affichée
-		for (let i = 0; i < imageFiles.length; i++) {
-			const img = imagesGrid.children[i];
-			if (!img) continue;
-			
-			// Calculer l'étape de cette image
-			const imageStep = Math.floor(i / imagesPerStep);
-			
-			if (imageStep === currentStep) {
-				// Cette image fait partie de l'étape actuelle
-				const positionInStep = i % imagesPerStep;
-				const stepEase = stepProgress - currentStep;
-				const imgEase = Math.max(0, Math.min(1, stepEase));
-				
-				// Opacity : apparaît graduellement, reste visible plus longtemps, disparaît lentement
-				const opacity = imgEase < 0.1 
-					? imgEase * 10 
-					: imgEase > 0.95 
-					? (1 - imgEase) * 20  // Plus lent pour disparaître
-					: 1;
-				
-				img.style.opacity = opacity;
-				
-				// Animer avec différents patterns selon la position dans l'étape
-				if (positionInStep === 0) {
-					// Première image de l'étape : vient de la gauche avec rotation
-					img.style.transform = `translate3d(${-400 + imgEase * 400}px,${-200 + imgEase * 200}px,0) rotate(${imgEase * -20}deg) scale(${0.8 + imgEase * 0.2})`;
-				} else {
-					// Deuxième image de l'étape : vient de la droite avec rotation opposée
-					img.style.transform = `translate3d(${400 - imgEase * 400}px,${-200 + imgEase * 200}px,0) rotate(${imgEase * 20}deg) scale(${0.8 + imgEase * 0.2})`;
-				}
+		const totalImages = imageFiles.length;
+
+		// Chaque image occupe une tranche égale de la progression slideshow
+		// Avec un léger overlap pour le fondu enchaîné
+		const rawIndex = slideshowProgress * totalImages;
+		const currentIndex = Math.min(Math.floor(rawIndex), totalImages - 1);
+		const localProgress = rawIndex - Math.floor(rawIndex); // 0 → 1 dans l'image courante
+
+		for (let i = 0; i < totalImages; i++) {
+			const item = imagesGrid.children[i];
+			if (!item) continue;
+
+			if (i === currentIndex) {
+				const enterEase = easeOutCubic(Math.min(localProgress * 3, 1));
+				const isLast = i === totalImages - 1;
+
+				// Disparition vers le haut à la fin de la tranche (sauf dernière image)
+				const exitStart = 0.65;
+				const exitProgress = isLast ? 0 : Math.max(0, (localProgress - exitStart) / (1 - exitStart));
+				const exitEase = easeInCubic(exitProgress);
+
+				const opacity = isLast ? enterEase : enterEase * (1 - exitEase * 0.95);
+				const yEnter = (1 - enterEase) * 60;
+				const yExit  = exitEase * -50;
+				const scale  = 0.88 + enterEase * 0.12 - exitEase * 0.05;
+				const rotate = (1 - enterEase) * 4 - exitEase * 2;
+
+				item.style.opacity = opacity;
+				item.style.transform = `translate3d(0, ${yEnter + yExit}px, 0) scale(${scale}) rotate(${rotate}deg)`;
+				item.style.zIndex = 10;
+
+			} else if (i < currentIndex) {
+				// Image passée : cachée en haut
+				item.style.opacity = 0;
+				item.style.transform = `translate3d(0, -80px, 0) scale(0.9)`;
+				item.style.zIndex = 5;
 			} else {
-				// Cette image n'est pas dans l'étape actuelle, la cacher
-				img.style.opacity = 0;
-				img.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+				// Image future : cachée en bas
+				item.style.opacity = 0;
+				item.style.transform = `translate3d(0, 80px, 0) scale(0.88)`;
+				item.style.zIndex = 5;
+			}
+		}
+
+		lastVisibleIndex = currentIndex;
+	} else {
+		// Cacher toutes les images avant le slideshow
+		for (let i = 0; i < imageFiles.length; i++) {
+			const item = imagesGrid.children[i];
+			if (item) {
+				item.style.opacity = 0;
+				item.style.transform = 'translate3d(0, 80px, 0) scale(0.88)';
 			}
 		}
 	}
 
-	// ===== ANIMATION DU TEXTE FINAL ("j'ai un cadeau pour toi") =====
+	// ===== TEXTES FINAUX =====
+	// Faire disparaître les images quand on arrive à la fin (seuil repoussé à 0.85)
+	const fadeOutImages = Math.min(Math.max((p - 0.85) * 20, 0), 1);
+	if (fadeOutImages > 0) {
+		for (let i = 0; i < imageFiles.length; i++) {
+			const item = imagesGrid.children[i];
+			if (item) item.style.opacity *= (1 - fadeOutImages);
+		}
+	}
+
 	finalText.style.opacity = finalProgress;
 	finalText.style.transform = `translate3d(0,${80 - finalProgress * 80}px,0) scale(${0.95 + finalProgress * 0.05})`;
 
-	// ===== ANIMATION DU TEXTE D'AIDE ("mais je vais avoir besoin de ton aide") =====
 	helpText.style.opacity = helpProgress;
 	helpText.style.transform = `translate3d(0,${40 - helpProgress * 40}px,0)`;
 
-	// ===== ANIMATION DE L'ÉMOJI SAC =====
 	bagEmoji.style.opacity = bagProgress;
 	bagEmoji.style.transform = `translate3d(0,${100 - bagProgress * 100}px,0) scale(${0.8 + bagProgress * 0.2})`;
 
-	// ===== ANIMATION DU SOUS-TITRE DU SAC =====
 	bagSubtitle.style.opacity = subtitleProgress;
 	bagSubtitle.style.transform = `translate3d(0,${60 - subtitleProgress * 60}px,0)`;
 
-	// Faire disparaître les éléments précédents quand les textes finaux apparaissent
-	const fadeOutProgress = Math.min(Math.max((p - 0.85) * 12.5, 0), 1); // Commence à 85% - AJUSTÉ
-	if (fadeOutProgress > 0) {
-		t1.style.opacity *= (1 - fadeOutProgress);
-		sub.style.opacity *= (1 - fadeOutProgress);
-		finalText.style.opacity *= (1 - fadeOutProgress); // Faire disparaître le final-text aussi
-		// Les images disparaissent aussi progressivement
-		for (let i = 0; i < imageFiles.length; i++) {
-			const img = imagesGrid.children[i];
-			if (img) {
-				img.style.opacity *= (1 - fadeOutProgress);
-			}
-		}
-	}
-
-	// ===== ANIMATION DU GRADIENT =====
+	// ===== GRADIENT =====
 	gradient.style.opacity = p;
 	gradient.style.transform = `scale(${0.8 + p * 0.6})`;
 
-	// ===== ANIMATION DES BLOBS (ARRIÈRE-PLAN) - MOUVEMENTS EN BOUCLE =====
-	// Utiliser le temps pour des animations continues et indépendantes
-	const time = Date.now() * 0.001; // Temps en secondes
-	
-	// Blob 1 : Mouvement circulaire lent
-	const b1Angle = time * 0.3; // Vitesse plus rapide
-	const b1Radius = 300;
-	const b1X = Math.cos(b1Angle) * b1Radius;
-	const b1Y = Math.sin(b1Angle) * b1Radius * 0.5;
-	b1.style.opacity = p * 0.7; // Légèrement transparent
-	b1.style.transform = `translate3d(${b1X}px,${b1Y}px,0) scale(${1 + Math.sin(time * 0.5) * 0.1})`;
-	
-	// Blob 2 : Mouvement en 8 (figure de Lissajous)
-	const b2Angle = time * 0.4; // Vitesse différente
-	const b2X = Math.sin(b2Angle) * 400;
-	const b2Y = Math.sin(b2Angle * 2) * 200;
-	b2.style.opacity = p * 0.6;
-	b2.style.transform = `translate3d(${b2X}px,${b2Y}px,0) scale(${1 + Math.cos(time * 0.7) * 0.15})`;
-	
-	// Blob 3 : Mouvement elliptique rapide
-	const b3Angle = time * 0.6; // Plus rapide
-	const b3X = Math.cos(b3Angle) * 250;
-	const b3Y = Math.sin(b3Angle) * 350;
-	b3.style.opacity = p * 0.8;
-	b3.style.transform = `translate3d(${b3X}px,${b3Y}px,0) rotate(${b3Angle * 50}deg) scale(${1 + Math.sin(time * 0.8) * 0.2})`;
-	
-	// Blob 4 : Mouvement en spirale
-	const b4Angle = time * 0.2; // Plus lent
-	const b4Radius = 200 + Math.sin(time * 0.3) * 100;
-	const b4X = Math.cos(b4Angle) * b4Radius;
-	const b4Y = Math.sin(b4Angle) * b4Radius;
-	b4.style.opacity = p * 0.5;
-	b4.style.transform = `translate3d(${b4X}px,${b4Y}px,0) scale(${1 + Math.cos(time * 0.4) * 0.25})`;
+	// ===== BLOBS =====
+	const time = Date.now() * 0.001;
 
-	// ===== DÉCLENCHEMENT DES CONFETTIS =====
-	// Les confettis explosent une seule fois quand le titre commence à apparaître (p >= 0.1)
+	const b1Angle = time * 0.3;
+	b1.style.opacity = p * 0.7;
+	b1.style.transform = `translate3d(${Math.cos(b1Angle) * 300}px,${Math.sin(b1Angle) * 150}px,0) scale(${1 + Math.sin(time * 0.5) * 0.1})`;
+
+	const b2Angle = time * 0.4;
+	b2.style.opacity = p * 0.6;
+	b2.style.transform = `translate3d(${Math.sin(b2Angle) * 400}px,${Math.sin(b2Angle * 2) * 200}px,0) scale(${1 + Math.cos(time * 0.7) * 0.15})`;
+
+	const b3Angle = time * 0.6;
+	b3.style.opacity = p * 0.8;
+	b3.style.transform = `translate3d(${Math.cos(b3Angle) * 250}px,${Math.sin(b3Angle) * 350}px,0) rotate(${b3Angle * 50}deg) scale(${1 + Math.sin(time * 0.8) * 0.2})`;
+
+	const b4Angle = time * 0.2;
+	const b4R = 200 + Math.sin(time * 0.3) * 100;
+	b4.style.opacity = p * 0.5;
+	b4.style.transform = `translate3d(${Math.cos(b4Angle) * b4R}px,${Math.sin(b4Angle) * b4R}px,0) scale(${1 + Math.cos(time * 0.4) * 0.25})`;
+
+	// ===== CONFETTIS =====
 	if (p >= 0.1 && !confettiShown) {
-		console.log("Déclenchement des confettis réalistes !");
-		try {
-			launchRealisticConfetti();
-			confettiShown = true;
-		} catch (error) {
-			console.error("Erreur lors du déclenchement des confettis:", error);
-		}
+		launchRealisticConfetti();
+		confettiShown = true;
 	}
 
-	// Boucle d'animation continue
 	requestAnimationFrame(animate);
 }
 
-// Initialiser la grille d'images
+// ===================================
+// FONCTIONS D'EASING
+// ===================================
+
+function easeOutCubic(t) {
+	return 1 - Math.pow(1 - t, 3);
+}
+
+function easeInCubic(t) {
+	return t * t * t;
+}
+
+// Init
 initializeImageGrid();
-
-// Démarre l'animation
 animate();
-
-// ===================================
-// FONCTION DE TEST
-// ===================================
-
-window.testConfetti = function() {
-	confettiShown = false; // Permet de retester le déclenchement
-	launchRealisticConfetti();
-};
