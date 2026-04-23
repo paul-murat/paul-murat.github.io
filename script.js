@@ -158,14 +158,14 @@ function animate() {
 	const p = current;
 
 	// Phases de scroll
-	const titleProgress       = Math.min(p * 5, 1);                              // 0%  → 20%
-	const subProgress         = Math.min(Math.max((p - 0.2) * 5, 0), 1);         // 20% → 40%
-	const titlesFadeProgress  = Math.min(Math.max((p - 0.4) * 10, 0), 1);        // 40% → 50%
-	const slideshowProgress   = Math.min(Math.max((p - 0.5) * 2.9, 0), 1);       // 50% → 85% (affiche toutes les images)
-	const finalProgress       = Math.min(Math.max((p - 0.88) * 50, 0), 1);       // 88% → 90%
-	const helpProgress        = Math.min(Math.max((p - 0.91) * 50, 0), 1);       // 91% → 93%
-	const bagProgress         = Math.min(Math.max((p - 0.94) * 50, 0), 1);       // 94% → 96%
-	const subtitleProgress    = Math.min(Math.max((p - 0.96) * 50, 0), 1);       // 96% → 100%
+	const titleProgress       = Math.min(p * 10, 1);                              // 0%  → 20%
+	const subProgress         = Math.min(Math.max((p - 0.1) * 10, 0), 1);         // 20% → 40%
+	const titlesFadeProgress  = Math.min(Math.max((p - 0.2) * 10, 0), 1);        // 40% → 50%
+	const slideshowProgress   = Math.min(Math.max((p - 0.3) * 2, 0), 1);       // 50% → 85% (affiche toutes les images)
+	const finalProgress       = Math.min(Math.max((p - 0.8) * 50, 0), 1);       // 88% → 90%
+	const helpProgress        = Math.min(Math.max((p - 0.85) * 50, 0), 1);       // 91% → 93%
+	const bagProgress         = Math.min(Math.max((p - 0.9) * 50, 0), 1);       // 94% → 96%
+	const subtitleProgress    = Math.min(Math.max((p - 0.95) * 50, 0), 1);       // 96% → 100%
 
 	// ===== TITRE =====
 	t1.style.opacity = titleProgress * (1 - titlesFadeProgress);
