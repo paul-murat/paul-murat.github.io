@@ -30,7 +30,7 @@ body {
 }
 
 .title {
-	font-size: clamp(42px, 7vw, 100px);
+	font-size: clamp(30px, 7vw, 70px);
 	font-weight: 600;
 	letter-spacing: -0.03em;
 	text-align: center;
@@ -52,7 +52,7 @@ body {
 
 .help-text {
 	font-size: 18px;
-	color: #888;
+	color: #fff;
 	opacity: 0;
 	transform: translate3d(0, 40px, 0);
 	will-change: transform, opacity;
